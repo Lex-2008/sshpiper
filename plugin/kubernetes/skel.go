@@ -102,6 +102,7 @@ func (s *skelpipeFromWrapper) MatchConn(conn libplugin.ConnMetadata) (skel.SkelP
 	user := conn.User()
 
 	matched := s.from.Username == user
+	targethost := s.to.Host
 	targetuser := s.to.Username
 
 	if targetuser == "" {
@@ -117,20 +118,25 @@ func (s *skelpipeFromWrapper) MatchConn(conn libplugin.ConnMetadata) (skel.SkelP
 		matched = re.MatchString(user)
 
 		if matched {
+			targethost = re.ReplaceAllString(user, s.to.Host)
 			targetuser = re.ReplaceAllString(user, s.to.Username)
 		}
 	}
 
 	if matched {
 		toWrapper := skelpipeToWrapper{
-			plugin:   s.plugin,
-			pipe:     s.pipe,
-			username: targetuser,
-			to:       s.to,
+			plugin:       s.plugin,
+			pipe:         s.pipe,
+			hostOverride: targethost,
+			username:     targetuser,
+			to:           s.to,
 		}
 
 		if isKubectlExecEnabled(s.pipe) {
-			privateKey, host, err := s.plugin.registerKubectlExecPipe(s.pipe, s.to)
+			to := *s.to
+			to.Host = targethost
+
+			privateKey, host, err := s.plugin.registerKubectlExecPipe(s.pipe, &to)
 			if err != nil {
 				return nil, err
 			}

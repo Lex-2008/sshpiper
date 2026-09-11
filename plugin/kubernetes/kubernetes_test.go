@@ -57,7 +57,7 @@ func TestMatchConnRegexPrivateKey(t *testing.T) {
 			}},
 			To: piperv1beta1.ToSpec{
 				Username:         "dest$1",
-				Host:             "example",
+				Host:             "host-$1.example:22",
 				PrivateKeySecret: corev1.LocalObjectReference{Name: "ignored"},
 			},
 		},
@@ -82,6 +82,10 @@ func TestMatchConnRegexPrivateKey(t *testing.T) {
 
 	if priv.username != "dest123" {
 		t.Fatalf("unexpected mapped username: %q", priv.username)
+	}
+
+	if got := priv.Host(fakeConn{}); got != "host-123.example:22" {
+		t.Fatalf("unexpected mapped host: %q", got)
 	}
 }
 

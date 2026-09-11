@@ -36,6 +36,7 @@ type skelpipeToWrapper struct {
 	config *piperConfig
 
 	username string
+	host     string
 	to       *yamlPipeTo
 }
 
@@ -75,6 +76,9 @@ func (s *skelpipeToWrapper) User(conn libplugin.ConnMetadata) string {
 }
 
 func (s *skelpipeToWrapper) Host(conn libplugin.ConnMetadata) string {
+	if s.host != "" {
+		return s.host
+	}
 	return s.to.Host
 }
 
@@ -102,6 +106,7 @@ func (s *skelpipeToWrapper) KnownHosts(conn libplugin.ConnMetadata) ([]byte, err
 func (s *skelpipeFromWrapper) MatchConn(conn libplugin.ConnMetadata) (skel.SkelPipeTo, error) {
 	username := conn.User()
 
+	targethost := s.to.Host
 	targetuser := s.to.Username
 
 	var matched bool
@@ -116,6 +121,7 @@ func (s *skelpipeFromWrapper) MatchConn(conn libplugin.ConnMetadata) (skel.SkelP
 			matched = re.MatchString(username)
 
 			if matched {
+				targethost = re.ReplaceAllString(username, s.to.Host)
 				targetuser = re.ReplaceAllString(username, s.to.Username)
 			}
 		}
@@ -148,6 +154,7 @@ func (s *skelpipeFromWrapper) MatchConn(conn libplugin.ConnMetadata) (skel.SkelP
 			return &skelpipeToPrivateKeyWrapper{
 				skelpipeToWrapper: skelpipeToWrapper{
 					config:   s.config,
+					host:     targethost,
 					username: targetuser,
 					to:       s.to,
 				},
@@ -157,6 +164,7 @@ func (s *skelpipeFromWrapper) MatchConn(conn libplugin.ConnMetadata) (skel.SkelP
 		return &skelpipeToPasswordWrapper{
 			skelpipeToWrapper: skelpipeToWrapper{
 				config:   s.config,
+				host:     targethost,
 				username: targetuser,
 				to:       s.to,
 			},
