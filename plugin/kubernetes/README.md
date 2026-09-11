@@ -31,6 +31,8 @@ kubectl apply -f https://raw.githubusercontent.com/tg123/sshpiper/master/plugin/
 
 most parameters are the same as in [yaml](../yaml/)
 
+When `from.username_regex_match` is true, regex capture groups from `from.username` can be referenced in both `to.username` and `to.host` (for example, `$1`).
+
 A full sample can be found [here](sample.yaml)
 
 `Pipe` annotations can enable kubectl exec bridge mode (for pods without sshd):

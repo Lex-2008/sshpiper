@@ -277,7 +277,7 @@ func TestMatchConnRegex(t *testing.T) {
 	}
 	privateKeyData := base64.StdEncoding.EncodeToString([]byte("test-private-key"))
 	to := &yamlPipeTo{
-		Host:           "example.com:22",
+		Host:           "$1.example.com:22",
 		Username:       "$1",
 		PrivateKeyData: privateKeyData,
 	}
@@ -300,7 +300,7 @@ func TestMatchConnRegex(t *testing.T) {
 	if privateKeyWrapper.User(conn) != "alice" {
 		t.Fatalf("Expected upstream user 'alice', got %q", privateKeyWrapper.User(conn))
 	}
-	if privateKeyWrapper.Host(conn) != "example.com:22" {
+	if privateKeyWrapper.Host(conn) != "alice.example.com:22" {
 		t.Fatalf("Unexpected host %q", privateKeyWrapper.Host(conn))
 	}
 }

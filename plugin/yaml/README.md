@@ -57,7 +57,7 @@ pipes:
 
 ### Regex for dynamic usernames
 
-With `from.username_regex_match: true` you can provide a regex pattern for the `from.username` attribute. The capture group value will be available for `to.username` via `$1`.
+With `from.username_regex_match: true` you can provide a regex pattern for the `from.username` attribute. The capture group value will be available for both `to.username` and `to.host` via `$1`.
 
 For example when the downstream client connects to the sshpiper service for the user `password_world_regex`, this would match the pattern and connect to the upstream `world@example.com`:
 
